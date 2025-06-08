@@ -1,0 +1,103 @@
+{
+  "name": "AI-Fiction-TikTok-Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "triggerTimes": [
+          {
+            "mode": "everyX",
+            "value": 6,
+            "unit": "hours"
+          }
+        ]
+      },
+      "id": "1",
+      "name": "Every 6 Hours",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [
+        200,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "method": "POST",
+        "authentication": "headerAuth",
+        "sendBody": true,
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\"model\": \"gpt-4\", \"messages\": [{\"role\": \"user\", \"content\": \"Buatkan satu narasi fiksi pendek dengan durasi maksimal 60 detik ketika dibacakan. Cerita harus lucu, absurd, dan tidak biasa. Gunakan gaya bercerita yang ringan dan kasual, seperti ngobrol ke teman di warung kopi. Harus ada twist di akhir cerita. Contoh: alien kerja kantoran, sandal jepit yang bisa teleportasi, atau nenek jadi ninja rahasia.\"}]}"
+      },
+      "id": "2",
+      "name": "Generate Fiction",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        400,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "openai-credential-id",
+          "name": "OpenAI API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "https://api.elevenlabs.io/v1/text-to-speech/VOICE_ID",
+        "method": "POST",
+        "authentication": "headerAuth",
+        "sendBody": true,
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "{\"text\": \"={{ $json[\\\"choices\\\"][0][\\\"message\\\"][\\\"content\\\"] }}\", \"voice_settings\": {\"stability\": 0.5, \"similarity_boost\": 0.75}}"
+      },
+      "id": "3",
+      "name": "Convert to Voice",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        600,
+        200
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "elevenlabs-credential-id",
+          "name": "ElevenLabs API"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Every 6 Hours": {
+      "main": [
+        [
+          {
+            "node": "Generate Fiction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Fiction": {
+      "main": [
+        [
+          {
+            "node": "Convert to Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1",
+  "tags": [],
+  "versionId": "v1"
+}
