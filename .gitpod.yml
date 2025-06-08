@@ -1,0 +1,9 @@
+# .gitpod.yml
+:contentReference[oaicite:4]{index=4}
+
+tasks:
+  - :contentReference[oaicite:5]{index=5}
+  - :contentReference[oaicite:6]{index=6}
+ports:
+  - port: 5678
+    :contentReference[oaicite:7]{index=7}
